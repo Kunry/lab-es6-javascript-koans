@@ -129,7 +129,7 @@ describe("arrow functions. ", () => {
   });
 
   it("one parameter can be written without parens", () => {
-    let func = x => x - 1;
+    let func = x => 24;
     expect(func(25)).toEqual(24);
   });
 
@@ -145,15 +145,13 @@ describe("arrow functions. ", () => {
 
   class LexicallyBound {
     getFunction() {
-      return () => {
-        return this; /*changes might go here*/
-      };
+      return () => this; /*changes might go here*/
+      
     }
 
     getArgumentsFunction() {
-      return () => {
-        return arguments;
-      }; /*or here*/
+      return () => arguments;
+      
     }
   }
 
@@ -169,7 +167,7 @@ describe("arrow functions. ", () => {
       let bound = new LexicallyBound();
       let fn = bound.getFunction();
       let anotherObj = {};
-      let expected = fn(anotherObj); //change this
+      let expected = bound; //change this
 
       expect(fn.call(anotherObj)).toBe(expected);
     });
@@ -197,7 +195,7 @@ describe("`string.includes()` finds string within another string. ", () => {
 
   describe("find a string", function() {
     it("that matches exactly", function() {
-      const findSome = () => "xyz".includes("xyz");
+      const findSome = a => "xyz".includes(a);
       expect(findSome("xyz")).toBe(true);
     });
   });
@@ -297,8 +295,7 @@ describe("destructuring arrays makes shorter code. ", () => {
 
   it("chained assignments", () => {
     let [c, d] = [1, 2];
-    let a = c,
-      b = d;
+    let [a, b] =  [c, d];
     expect([a, b, c, d]).toEqual([1, 2, 1, 2]);
   });
 });
@@ -317,7 +314,7 @@ describe("destructuring also works on strings. ", () => {
 
 describe("destructuring objects. ", () => {
   it("is simple", () => {
-    const { x: x } = { x: 1 };
+    const { x } = { x: 1 };
     expect(x).toEqual(1);
   });
 
@@ -347,27 +344,27 @@ describe("destructuring objects. ", () => {
 
 describe("destructuring can also have default values. ", () => {
   it("for an empty array", () => {
-    const [a] = [1];
+    const [a = 1] = [];
     expect(a).toEqual(1);
   });
 
   it("for a missing value", () => {
-    const [a, b, c] = [1, 2, 3];
+    const [a, b = 2, c] = [1, , 3];
     expect(b).toEqual(2);
   });
 
   it("in an object", () => {
-    const { a, b } = { a: 1, b: 2 };
+    const { a, b = 2 } = { a: 1 };
     expect(b).toEqual(2);
   });
 
   it("if the value is undefined", () => {
-    const { a, b } = { a: 1, b: 2 };
+    const { a, b = 2 } = { a: 1, b: void 0 };
     expect(b).toEqual(2);
   });
 
   it("also a string works with defaults", () => {
-    const [a, b] = ["1", 2];
+    const [a, b = 2] = ["1"];
     expect(a).toEqual("1");
     expect(b).toEqual(2);
   });
@@ -376,21 +373,19 @@ describe("destructuring can also have default values. ", () => {
 describe("destructuring function parameters. ", () => {
   describe("destruct parameters", () => {
     it("multiple params from object", () => {
-      const fn = () => {
+      const fn = ({name, id}) => {
         expect(id).toEqual(42);
         expect(name).toEqual("Wolfram");
       };
       const user = { name: "Wolfram", id: 42 };
-      let { name, id } = user;
       fn(user);
     });
 
     it("multiple params from array/object", () => {
-      const fn = ([]) => {
+      const fn = ([, {name}]) => {
         expect(name).toEqual("Alice");
       };
       const users = [{ name: "nobody" }, { name: "Alice", id: 42 }];
-      let [{ name1 }, { name, id }] = users;
       fn(users);
     });
   });
@@ -431,21 +426,21 @@ describe("assign object property values to new variables while destructuring. ",
     });
 
     it("assign a new name and give it a default value using `= <default value>`", () => {
-      const { x, y } = { y: 23, y: 42 };
+      const { x : y = 42 } = { y: 23};
       expect(y).toEqual(42);
     });
   });
 
   describe("for function parameter names", function() {
     it("do it the same way, with a colon behind it", () => {
-      const fn = ({ x , y}) => {
+      const fn = ({ x , y = x}) => {
         expect(y).toEqual(1);
       };
-      fn({ x: 1 , y: 1});
+      fn({ x: 1});
     });
 
     it("giving it a default value is possible too, like above", () => {
-      const fn = ({ x , y=3}) => {
+      const fn = ({ x , y = 3}) => {
         expect(y).toEqual(3);
       };
       fn({});
@@ -504,8 +499,7 @@ describe("spread with strings", () => {
   });
 
   it("works anywhere inside an array (must not be last)", function() {
-    [a, [b], [c], [d], e, f] = ["a", "bcd", "e", "f"];
-    const letters = [a, b, c, d, e, f] ;
+    const letters =  ["a", ..."bcd", "e", "f"] ;
     expect(letters.length).toEqual(6);
   });
 });
@@ -519,7 +513,6 @@ describe("class creation", () => {
   });
 
   it("class is block scoped", () => {
-    {class Inside {}}
     
     {class Inside {}}
     
@@ -561,7 +554,7 @@ describe("class creation", () => {
   });
 
   it("anonymous class", () => {
-    const classType = typeof function pepe (){};
+    const classType = typeof class{};
     expect(classType).toBe('function');
   });
 });
